@@ -156,7 +156,12 @@ def create_cpm_bar_chart(results_df):
         title="Viktade CPM-poäng (0-100 skala)",
         xaxis_title="Leverantör",
         yaxis_title="Poäng",
-        showlegend=False
+        showlegend=False,
+        plot_bgcolor='#1a1a1a',
+        paper_bgcolor='#1a1a1a',
+        font=dict(color='white'),
+        xaxis=dict(gridcolor='#333333', color='white'),
+        yaxis=dict(gridcolor='#333333', color='white')
     )
     
     return fig
@@ -189,7 +194,12 @@ def create_cpm_heatmap():
     fig.update_layout(
         title="Heatmap över alla CPM-betyg",
         xaxis_title="Kritiska Framgångsfaktorer",
-        yaxis_title="Leverantörer"
+        yaxis_title="Leverantörer",
+        plot_bgcolor='#1a1a1a',
+        paper_bgcolor='#1a1a1a',
+        font=dict(color='white'),
+        xaxis=dict(gridcolor='#333333', color='white'),
+        yaxis=dict(gridcolor='#333333', color='white')
     )
     
     return fig

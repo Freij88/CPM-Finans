@@ -142,7 +142,13 @@ def plot_stock_chart(combined_df):
         yaxis_title='Pris (USD)',
         hovermode='x unified',
         showlegend=True,
-        height=500
+        height=500,
+        plot_bgcolor='#1a1a1a',
+        paper_bgcolor='#1a1a1a',
+        font=dict(color='white'),
+        xaxis=dict(gridcolor='#333333', color='white'),
+        yaxis=dict(gridcolor='#333333', color='white'),
+        legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
     )
     
     return fig

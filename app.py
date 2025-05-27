@@ -204,6 +204,48 @@ def apply_dark_mode_css():
     .js-plotly-plot {
         background-color: #1a1a1a !important;
     }
+    
+    /* Extra text readability fixes */
+    .stMarkdown, .stMarkdown p, .stMarkdown div {
+        color: #ffffff !important;
+    }
+    .stText, .stCaption {
+        color: #ffffff !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        color: #ffffff !important;
+    }
+    p, span, div {
+        color: #ffffff !important;
+    }
+    .stAlert {
+        color: #ffffff !important;
+    }
+    
+    /* Labels för alla inputs */
+    label, .stFormLabel {
+        color: #ffffff !important;
+    }
+    
+    /* Dropdown arrows och ikoner */
+    .stSelectbox [data-baseweb="select"] {
+        background-color: #333333 !important;
+    }
+    
+    /* Radio buttons */
+    .stRadio label {
+        color: #ffffff !important;
+    }
+    
+    /* Number input specifikt */
+    .stNumberInput label {
+        color: #ffffff !important;
+    }
+    
+    /* Hjälptext */
+    .stHelp {
+        color: #cccccc !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
