@@ -35,10 +35,37 @@ def apply_dark_mode_css():
     """
     st.markdown("""
     <style>
-    /* Huvudbakgrund */
+    /* Ta bort alla vita områden och sätt konsekvent mörk bakgrund */
     .stApp {
-        background-color: #0f0f0f;
-        color: #ffffff;
+        background-color: #0f0f0f !important;
+        color: #ffffff !important;
+    }
+    
+    /* Fixa header och top bar */
+    .main .block-container {
+        background-color: #0f0f0f !important;
+        padding-top: 0rem;
+    }
+    
+    /* Ta bort vita margins och padding */
+    .css-18e3th9, .css-1d391kg, .css-12oz5g7 {
+        background-color: #0f0f0f !important;
+    }
+    
+    /* Header area */
+    header[data-testid="stHeader"] {
+        background-color: #0f0f0f !important;
+        height: 0px;
+    }
+    
+    /* Main content area */
+    .main {
+        background-color: #0f0f0f !important;
+    }
+    
+    /* Remove any white spaces */
+    .css-1lcbmhc, .css-1outpf7, .css-16huue1 {
+        background-color: #0f0f0f !important;
     }
     
     /* Sidebar styling */
