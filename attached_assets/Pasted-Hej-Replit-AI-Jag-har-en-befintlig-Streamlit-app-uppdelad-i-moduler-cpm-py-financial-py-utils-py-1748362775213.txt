@@ -1,0 +1,50 @@
+Hej Replit AI! Jag har en befintlig Streamlit-app uppdelad i moduler (cpm.py, financial.py, utils.py) och vill nu:
+
+1. **Flikar**  
+   - Behåll de två befintliga flikarna och lägg till en tredje:  
+     ```python
+     tabs = st.tabs(["CPM", "Finansiell", "Aktier"])
+     ```
+   - Varje flik ska bara ladda sina egna komponenter i respektive `show_cpm_tab()`, `show_financial_tab()` och `show_stocks_tab()`.
+
+2. **Aktier-fliken**  
+   - Låter användaren ange godtyckligt många tickers i en `st.text_input` eller `st.multiselect`.  
+   - Lägg till en `st.selectbox` för perioder: `["1 dag","7 dagar","30 dagar","90 dagar","1 år","5 år"]`.  
+   - Hämta data med `yfinance` i en ny modul `stocks.py` (funktion `fetch_stock_data(ticker, period)`).  
+   - Rita ett Plotly-linjediagram i `plot_stock_chart(df)` och visa pris, %-förändring samt högsta/lägsta i en `st.metric`-rad ovanför.  
+   - Vid fel: visa “Kunde inte hämta aktiedata – ladda upp egen CSV här” + `st.file_uploader` som fallback.
+
+3. **Modulär struktur**  
+   - Skapa `stocks.py` med:  
+     ```py
+     def fetch_stock_data(ticker, period): …
+     def plot_stock_chart(df): …
+     ```
+   - I `app.py` anropa `show_stocks_tab()`, och inom den anropa ovanstående funktioner.  
+   - Låt `cpm.py`, `financial.py` och `utils.py` hantera sina respektive saker.
+
+4. **Buggfix & layout**  
+   - ROC-vikter: ändra din `calculate_roc_weights()` så rankeringen går `for rank in range(1, n_csfs+1)`.  
+   - Rita CPM-sliders i en tabell/matris (en rad per CSF, en kolumn per företag) – t.ex. med `st.columns()`.  
+   - I “Finansiell” visa stapeldiagram direkt vid start och uppdatera det när användaren ändrar parametrar.
+
+5. **Dynamisk data & fallback**  
+   - Financial: hämta live-data (t.ex. med `yfinance`) men tillåt även `st.file_uploader` av CSV med motsvarande kolumnnamn.  
+   - Ge tooltip (“Source: Yahoo Finance”) i diagrammen för varje datapunkt.
+
+6. **Kommentering & dokumentation**  
+   - Lägg tydliga kodkommentarer som förklarar hur man:  
+     - byter datakälla för aktier,  
+     - lägger till egna parametrar i dropdowns,  
+     - lägger till nya företag i CPM och finansiell modell.
+
+7. **Requirements**  
+   - Uppdatera `requirements.txt` med nödvändiga paket:  
+     ```
+     streamlit
+     pandas
+     plotly
+     yfinance
+     ```
+   
+Generera alla uppdaterade filer (app.py, stocks.py, requirements.txt) och visa diff:arna. Tack!  
