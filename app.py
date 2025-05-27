@@ -27,7 +27,7 @@ def initialize_global_session_state():
 
 def apply_dark_mode_css():
     """
-    Applicera permanent dark mode CSS för hela applikationen
+    Applicera snyggt dark mode CSS med bra kontrast och läsbarhet
     
     How to modify:
     - Ändra färger genom att modifiera CSS-variablerna
@@ -35,52 +35,174 @@ def apply_dark_mode_css():
     """
     st.markdown("""
     <style>
-    .reportview-container, .sidebar .sidebar-content {
-        background-color: #0E1117;
-        color: #FFFFFF;
-    }
+    /* Huvudbakgrund */
     .stApp {
-        background-color: #0e1117;
-        color: #fafafa;
+        background-color: #0f0f0f;
+        color: #ffffff;
     }
-    .stTabs [data-baseweb="tab-list"] {
-        background-color: #262730;
+    
+    /* Sidebar styling */
+    .stSidebar {
+        background-color: #1a1a1a !important;
     }
-    .stTabs [data-baseweb="tab"] {
-        background-color: #262730;
-        color: #fafafa;
-        border: 1px solid #3e3e4e;
-    }
-    .stTabs [data-baseweb="tab"]:hover {
-        background-color: #3e3e4e;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #FF6B35 !important;
+    .stSidebar .stMarkdown {
         color: #ffffff !important;
     }
+    .stSidebar h1, .stSidebar h2, .stSidebar h3 {
+        color: #ffffff !important;
+    }
+    .stSidebar .stSelectbox label {
+        color: #ffffff !important;
+    }
+    .stSidebar .stTextInput label {
+        color: #ffffff !important;
+    }
+    .stSidebar .stButton button {
+        background-color: #333333;
+        color: #ffffff;
+        border: 1px solid #555555;
+    }
+    
+    /* Flikar */
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: #1a1a1a;
+        padding: 5px;
+        border-radius: 8px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: #333333;
+        color: #ffffff;
+        border: 1px solid #555555;
+        border-radius: 5px;
+        margin: 2px;
+        font-weight: 500;
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: #444444;
+        color: #ffffff;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #ff6b35 !important;
+        color: #ffffff !important;
+        border-color: #ff6b35 !important;
+    }
+    
+    /* Input fält */
     .stSelectbox > div > div {
-        background-color: #262730;
-        color: #fafafa;
+        background-color: #333333 !important;
+        color: #ffffff !important;
+        border: 1px solid #555555 !important;
     }
     .stTextInput > div > div > input {
-        background-color: #262730;
-        color: #fafafa;
+        background-color: #333333 !important;
+        color: #ffffff !important;
+        border: 1px solid #555555 !important;
     }
+    .stNumberInput > div > div > input {
+        background-color: #333333 !important;
+        color: #ffffff !important;
+        border: 1px solid #555555 !important;
+    }
+    
+    /* Knappar */
+    .stButton button {
+        background-color: #ff6b35;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        font-weight: 500;
+    }
+    .stButton button:hover {
+        background-color: #e55a2b;
+        color: #ffffff;
+    }
+    
+    /* Dataframe och tabeller */
     .stDataFrame {
-        background-color: #1e1e1e;
-    }
-    div[data-testid="metric-container"] {
-        background-color: #262730;
-        border: 1px solid #3e3e4e;
-        padding: 10px;
+        background-color: #1a1a1a;
+        border: 1px solid #333333;
         border-radius: 5px;
     }
-    .stSidebar {
-        background-color: #262730;
+    .stDataFrame table {
+        background-color: #1a1a1a !important;
+        color: #ffffff !important;
     }
-    .stSidebar .stSelectbox > div > div {
-        background-color: #1e1e1e;
-        color: #fafafa;
+    .stDataFrame thead tr th {
+        background-color: #333333 !important;
+        color: #ffffff !important;
+        border-bottom: 1px solid #555555;
+    }
+    .stDataFrame tbody tr td {
+        background-color: #1a1a1a !important;
+        color: #ffffff !important;
+        border-bottom: 1px solid #2a2a2a;
+    }
+    
+    /* Metrics containers */
+    div[data-testid="metric-container"] {
+        background-color: #1a1a1a;
+        border: 1px solid #333333;
+        padding: 15px;
+        border-radius: 8px;
+        color: #ffffff;
+    }
+    div[data-testid="metric-container"] label {
+        color: #cccccc !important;
+    }
+    div[data-testid="metric-container"] div {
+        color: #ffffff !important;
+    }
+    
+    /* Sliders */
+    .stSlider > div > div > div > div {
+        background-color: #ff6b35;
+    }
+    .stSlider label {
+        color: #ffffff !important;
+    }
+    
+    /* Info, success, error boxes */
+    .stInfo {
+        background-color: #1a3d5c;
+        border: 1px solid #2c5aa0;
+        color: #ffffff;
+    }
+    .stSuccess {
+        background-color: #1a4d3a;
+        border: 1px solid #2d8a5a;
+        color: #ffffff;
+    }
+    .stError {
+        background-color: #5c1a1a;
+        border: 1px solid #a02c2c;
+        color: #ffffff;
+    }
+    
+    /* Checkboxes */
+    .stCheckbox label {
+        color: #ffffff !important;
+    }
+    
+    /* Multiselect */
+    .stMultiSelect > div > div {
+        background-color: #333333 !important;
+        color: #ffffff !important;
+        border: 1px solid #555555 !important;
+    }
+    
+    /* File uploader */
+    .stFileUploader label {
+        color: #ffffff !important;
+    }
+    .stFileUploader > div > div {
+        background-color: #333333;
+        border: 1px solid #555555;
+        color: #ffffff;
+    }
+    
+    /* Plotly chart background fix */
+    .js-plotly-plot {
+        background-color: #1a1a1a !important;
     }
     </style>
     """, unsafe_allow_html=True)

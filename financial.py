@@ -122,7 +122,15 @@ def create_financial_charts(df):
             title='Omsättning per företag (Mdr SEK)',
             labels={'Revenue (Mdr SEK)': 'Omsättning (Mdr SEK)'}
         )
-        revenue_chart.update_layout(height=400)
+        revenue_chart.update_layout(
+            height=400,
+            plot_bgcolor='#1a1a1a',
+            paper_bgcolor='#1a1a1a',
+            font=dict(color='white'),
+            xaxis=dict(gridcolor='#333333', color='white'),
+            yaxis=dict(gridcolor='#333333', color='white'),
+            legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
+        )
         
         # Lägg till källa som text
         revenue_chart.add_annotation(
@@ -130,7 +138,7 @@ def create_financial_charts(df):
             x=0.5, y=-0.15,
             xref="paper", yref="paper",
             showarrow=False,
-            font=dict(size=10, color="gray")
+            font=dict(size=10, color="#cccccc")
         )
         
     except Exception as e:
@@ -155,7 +163,15 @@ def create_financial_charts(df):
                     'P/E Ratio': 'P/E-tal'
                 }
             )
-            pe_chart.update_layout(height=400)
+            pe_chart.update_layout(
+                height=400,
+                plot_bgcolor='#1a1a1a',
+                paper_bgcolor='#1a1a1a',
+                font=dict(color='white'),
+                xaxis=dict(gridcolor='#333333', color='white'),
+                yaxis=dict(gridcolor='#333333', color='white'),
+                legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
+            )
             
             # Lägg till källa som text
             pe_chart.add_annotation(
@@ -163,7 +179,7 @@ def create_financial_charts(df):
                 x=0.5, y=-0.15,
                 xref="paper", yref="paper",
                 showarrow=False,
-                font=dict(size=10, color="gray")
+                font=dict(size=10, color="#cccccc")
             )
             
         except Exception as e:
@@ -181,7 +197,15 @@ def create_financial_charts(df):
             title='Marknadspenetration per företag (%)',
             labels={'Market Penetration (%)': 'Marknadspenetration (%)'}
         )
-        penetration_chart.update_layout(height=400)
+        penetration_chart.update_layout(
+            height=400,
+            plot_bgcolor='#1a1a1a',
+            paper_bgcolor='#1a1a1a',
+            font=dict(color='white'),
+            xaxis=dict(gridcolor='#333333', color='white'),
+            yaxis=dict(gridcolor='#333333', color='white'),
+            legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
+        )
         
         # Lägg till källa som text
         penetration_chart.add_annotation(
@@ -189,7 +213,7 @@ def create_financial_charts(df):
             x=0.5, y=-0.15,
             xref="paper", yref="paper",
             showarrow=False,
-            font=dict(size=10, color="gray")
+            font=dict(size=10, color="#cccccc")
         )
         
     except Exception as e:
