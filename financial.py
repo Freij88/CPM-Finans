@@ -26,6 +26,8 @@ def initialize_financial_session_state():
         st.session_state.custom_tickers = []
     if 'financial_data_cache' not in st.session_state:
         st.session_state.financial_data_cache = pd.DataFrame()
+    if 'total_industry_revenue' not in st.session_state:
+        st.session_state.total_industry_revenue = 500  # miljarder USD
 
 def fetch_financial_data():
     """
@@ -90,67 +92,85 @@ def fetch_financial_data():
 
 def create_financial_charts(df):
     """
-    Skapa finansiella diagram med Altair
+    Skapa finansiella diagram med Plotly för bättre interaktivitet
     
     How to modify:
-    - Ändra diagramtyper från bar/circle till andra Altair charts
+    - Ändra diagramtyper från bar/scatter till andra Plotly charts
     - Lägg till fler visualiseringar här
-    - Ändra färgskala genom color-parametern
+    - Ändra färgskala genom color_discrete_sequence parametern
     """
     if df.empty:
-        return None, None
+        return None, None, None
     
     # Filtrera ut rader med 0-värden för bättre visualisering
     df_filtered = df[df['Revenue (B USD)'] > 0].copy()
     
     if df_filtered.empty:
-        return None, None
+        return None, None, None
     
-    # Konvertera till dictionary för Altair
-    chart_data = df_filtered.to_dict('records')
+    # Konvertera till Mdr SEK (1 USD ≈ 10.5 SEK ungefär)
+    usd_to_sek = 10.5
+    df_filtered['Revenue (Mdr SEK)'] = df_filtered['Revenue (B USD)'] * usd_to_sek
     
-    # Revenue chart
-    revenue_chart = alt.Chart(alt.InlineData(values=chart_data)).mark_bar().encode(
-        x=alt.X('Company:N', sort='-y'),
-        y=alt.Y('Revenue (B USD):Q', title='Omsättning (miljarder USD)'),
-        color=alt.Color('Country:N', title='Land'),
-        tooltip=[
-            alt.Tooltip('Company:N', title='Företag'),
-            alt.Tooltip('Revenue (B USD):Q', title='Omsättning (B USD)', format='.2f'),
-            alt.Tooltip('Employees:Q', title='Anställda', format=','),
-            alt.Tooltip('Data Source:N', title='Källa')
-        ]
-    ).properties(
-        width=600,
-        height=400,
-        title='Omsättning per företag (miljarder USD)'
+    # Revenue stapeldiagram
+    revenue_chart = px.bar(
+        df_filtered,
+        x='Company',
+        y='Revenue (Mdr SEK)',
+        color='Country',
+        title='Omsättning per företag (Mdr SEK)',
+        hover_data={
+            'Revenue (Mdr SEK)': ':.1f',
+            'Employees': ':,',
+            'Data Source': True
+        },
+        labels={'Revenue (Mdr SEK)': 'Omsättning (Mdr SEK)'}
     )
+    revenue_chart.update_layout(height=400)
     
-    # P/E Ratio chart - bara företag med P/E > 0
-    pe_data = [item for item in chart_data if item.get('P/E Ratio', 0) > 0]
+    # P/E vs Revenue scatter plot
+    pe_filtered = df_filtered[df_filtered['P/E Ratio'] > 0].copy()
+    pe_chart = None
     
-    if pe_data:
-        pe_chart = alt.Chart(alt.InlineData(values=pe_data)).mark_circle(size=100).encode(
-            x=alt.X('Revenue (B USD):Q', title='Omsättning (miljarder USD)'),
-            y=alt.Y('P/E Ratio:Q', title='P/E-tal'),
-            color=alt.Color('Country:N', title='Land'),
-            size=alt.Size('Employees:Q', title='Antal anställda', scale=alt.Scale(range=[50, 500])),
-            tooltip=[
-                alt.Tooltip('Company:N', title='Företag'),
-                alt.Tooltip('Revenue (B USD):Q', title='Omsättning (B USD)', format='.2f'),
-                alt.Tooltip('P/E Ratio:Q', title='P/E-tal', format='.2f'),
-                alt.Tooltip('Employees:Q', title='Anställda', format=','),
-                alt.Tooltip('Data Source:N', title='Källa')
-            ]
-        ).properties(
-            width=600,
-            height=400,
-            title='P/E-tal vs Omsättning (bubbelstorlek = antal anställda)'
+    if not pe_filtered.empty:
+        pe_chart = px.scatter(
+            pe_filtered,
+            x='Revenue (Mdr SEK)',
+            y='P/E Ratio',
+            size='Employees',
+            color='Country',
+            hover_name='Company',
+            title='P/E-tal vs Omsättning (bubbelstorlek = antal anställda)',
+            hover_data={
+                'Revenue (Mdr SEK)': ':.1f',
+                'P/E Ratio': ':.2f',
+                'Employees': ':,',
+                'Data Source': True
+            },
+            labels={
+                'Revenue (Mdr SEK)': 'Omsättning (Mdr SEK)',
+                'P/E Ratio': 'P/E-tal'
+            }
         )
-    else:
-        pe_chart = None
+        pe_chart.update_layout(height=400)
     
-    return revenue_chart, pe_chart
+    # Marknadspenetration diagram
+    penetration_chart = px.bar(
+        df_filtered,
+        x='Company',
+        y='Market Penetration (%)',
+        color='Country',
+        title='Marknadspenetration per företag (%)',
+        hover_data={
+            'Market Penetration (%)': ':.2f',
+            'Revenue (Mdr SEK)': ':.1f',
+            'Data Source': True
+        },
+        labels={'Market Penetration (%)': 'Marknadspenetration (%)'}
+    )
+    penetration_chart.update_layout(height=400)
+    
+    return revenue_chart, pe_chart, penetration_chart
 
 def create_geographic_heatmap(df):
     """
@@ -228,20 +248,34 @@ def show_financial_tab():
         st.subheader("📊 Senaste finansiella data")
         st.caption("🔗 Datakälla: Yahoo Finance (yfinance)")
         
+        # Beräkna marknadspenetration med aktuellt värde
+        cached_data = calculate_market_penetration(
+            st.session_state.financial_data_cache.copy(), 
+            st.session_state.total_industry_revenue
+        )
+        
         # Skapa och visa diagram direkt
-        revenue_chart, pe_chart = create_financial_charts(st.session_state.financial_data_cache)
+        charts = create_financial_charts(cached_data)
+        revenue_chart, pe_chart, penetration_chart = charts if charts else (None, None, None)
         
         if revenue_chart:
             col1, col2 = st.columns(2)
             with col1:
                 st.caption("💡 Hovra över staplarna för detaljer")
-                st.altair_chart(revenue_chart, use_container_width=True)
+                st.plotly_chart(revenue_chart, use_container_width=True)
             with col2:
                 if pe_chart:
                     st.caption("💡 Bubbelstorlek = antal anställda")
-                    st.altair_chart(pe_chart, use_container_width=True)
+                    st.plotly_chart(pe_chart, use_container_width=True)
+                else:
+                    st.info("💡 P/E-data ej tillgänglig för dessa företag")
         
-        st.dataframe(st.session_state.financial_data_cache, use_container_width=True)
+        # Visa marknadspenetration
+        if penetration_chart:
+            st.caption("💡 Baserat på total branschomsättning")
+            st.plotly_chart(penetration_chart, use_container_width=True)
+        
+        st.dataframe(cached_data, use_container_width=True)
     
     col1, col2 = st.columns([2, 1])
     
@@ -295,6 +329,25 @@ def show_financial_tab():
                 st.rerun()
     
     with col2:
+        st.subheader("⚙️ Inställningar")
+        
+        # Branschomsättning input
+        total_revenue = st.number_input(
+            "Total branschomsättning (miljarder USD)",
+            min_value=1.0,
+            max_value=10000.0,
+            value=float(st.session_state.total_industry_revenue),
+            step=10.0,
+            help="Total marknadsomsättning för beräkning av marknadspenetration"
+        )
+        
+        if total_revenue != st.session_state.total_industry_revenue:
+            st.session_state.total_industry_revenue = total_revenue
+            st.success("✅ Branschomsättning uppdaterad!")
+            st.rerun()
+        
+        st.divider()
+        
         st.subheader("📁 Alternativ datakälla")
         st.info("Ladda upp CSV/Excel med kolumner: Company, Revenue, Employees, CountryCode")
         
@@ -328,8 +381,9 @@ def show_financial_tab():
                 # Skapa diagram
                 st.subheader("📈 Visualiseringar")
                 
-                # Altair-diagram med tooltips
-                revenue_chart, pe_chart = create_financial_charts(financial_df)
+                # Plotly-diagram med tooltips
+                charts = create_financial_charts(financial_df)
+                revenue_chart, pe_chart, penetration_chart = charts if charts else (None, None, None)
                 
                 if revenue_chart:
                     col1, col2 = st.columns(2)

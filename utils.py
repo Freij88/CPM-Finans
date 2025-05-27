@@ -74,7 +74,11 @@ def calculate_market_penetration(df, total_market_revenue=500):
         return df
     
     df = df.copy()
-    df['Market Penetration (%)'] = (df['Revenue (B USD)'] / total_market_revenue * 100).round(2)
+    
+    # Säkerställ att Revenue (B USD) är numerisk
+    if 'Revenue (B USD)' in df.columns:
+        df['Revenue (B USD)'] = pd.to_numeric(df['Revenue (B USD)'], errors='coerce').fillna(0)
+        df['Market Penetration (%)'] = (df['Revenue (B USD)'] / total_market_revenue * 100).round(2)
     
     return df
 
