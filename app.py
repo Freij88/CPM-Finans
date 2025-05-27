@@ -24,72 +24,66 @@ def initialize_global_session_state():
         initialize_cpm_session_state()
         initialize_financial_session_state()
         initialize_stocks_session_state()
-    
-    # Initialisera dark mode state
-    if 'dark_mode' not in st.session_state:
-        st.session_state.dark_mode = False
 
-def apply_custom_css():
+def apply_dark_mode_css():
     """
-    Applicera anpassad CSS baserat på dark/light mode
+    Applicera permanent dark mode CSS för hela applikationen
     
     How to modify:
     - Ändra färger genom att modifiera CSS-variablerna
     - Lägg till fler stilar för olika komponenter
     """
-    if st.session_state.dark_mode:
-        # Dark mode CSS
-        st.markdown("""
-        <style>
-        .stApp {
-            background-color: #0e1117;
-            color: #fafafa;
-        }
-        .stTabs [data-baseweb="tab-list"] {
-            background-color: #262730;
-        }
-        .stTabs [data-baseweb="tab"] {
-            background-color: #262730;
-            color: #fafafa;
-        }
-        .stTabs [data-baseweb="tab"]:hover {
-            background-color: #3e3e4e;
-        }
-        .stSelectbox > div > div {
-            background-color: #262730;
-            color: #fafafa;
-        }
-        .stTextInput > div > div > input {
-            background-color: #262730;
-            color: #fafafa;
-        }
-        .stDataFrame {
-            background-color: #1e1e1e;
-        }
-        div[data-testid="metric-container"] {
-            background-color: #262730;
-            border: 1px solid #3e3e4e;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-    else:
-        # Light mode CSS (default)
-        st.markdown("""
-        <style>
-        .stApp {
-            background-color: #ffffff;
-            color: #262730;
-        }
-        div[data-testid="metric-container"] {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+    st.markdown("""
+    <style>
+    .reportview-container, .sidebar .sidebar-content {
+        background-color: #0E1117;
+        color: #FFFFFF;
+    }
+    .stApp {
+        background-color: #0e1117;
+        color: #fafafa;
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: #262730;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: #262730;
+        color: #fafafa;
+        border: 1px solid #3e3e4e;
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: #3e3e4e;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #FF6B35 !important;
+        color: #ffffff !important;
+    }
+    .stSelectbox > div > div {
+        background-color: #262730;
+        color: #fafafa;
+    }
+    .stTextInput > div > div > input {
+        background-color: #262730;
+        color: #fafafa;
+    }
+    .stDataFrame {
+        background-color: #1e1e1e;
+    }
+    div[data-testid="metric-container"] {
+        background-color: #262730;
+        border: 1px solid #3e3e4e;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    .stSidebar {
+        background-color: #262730;
+    }
+    .stSidebar .stSelectbox > div > div {
+        background-color: #1e1e1e;
+        color: #fafafa;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 def main():
     """
@@ -102,32 +96,20 @@ def main():
     """
     # Konfigurera sidan
     st.set_page_config(
-        page_title="CPM & Finansiell Analys Platform",
+        page_title="CPM + Finansiell + Aktier",
         page_icon="📊",
         layout="wide",
-        initial_sidebar_state="expanded"
+        initial_sidebar_state="auto"
     )
     
     # Initialisera session state
     initialize_global_session_state()
     
-    # Applicera custom CSS för dark/light mode
-    apply_custom_css()
+    # Applicera permanent dark mode CSS
+    apply_dark_mode_css()
     
-    # Header med dark mode toggle
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        st.title("📊 CPM & Finansiell Analys Platform")
-    with col2:
-        # Dark mode toggle
-        dark_mode = st.checkbox(
-            "🌙 Dark Mode", 
-            value=st.session_state.dark_mode,
-            help="Växla mellan ljust och mörkt tema"
-        )
-        if dark_mode != st.session_state.dark_mode:
-            st.session_state.dark_mode = dark_mode
-            st.rerun()
+    # Header
+    st.title("📊 CPM & Finansiell Analys Platform")
     st.markdown("""
     ### Omfattande affärsanalysverktyg för strategisk beslutsfattning
     

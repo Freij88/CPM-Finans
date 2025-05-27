@@ -1,0 +1,51 @@
+Hej Replit AI! Vi behöver stärka och stabilisera vår Streamlit-app, med fokus på finansiella modulen och dark mode. Gör följande:
+
+1. **Endast Dark Mode**  
+   - Ta bort togglen och hårdkoda appen i dark mode med:
+     ```python
+     import streamlit as st
+     st.set_page_config(page_title="CPM + Finansiell + Aktier", layout="wide", initial_sidebar_state="auto")
+     st.markdown(
+         """
+         <style>
+         .reportview-container, .sidebar .sidebar-content {
+             background-color: #0E1117;
+             color: #FFFFFF;
+         }
+         </style>
+         """, unsafe_allow_html=True
+     )
+     ```
+   - Se till att sidomenyn (sidebar) och huvudflikarna syns tydligt i mörkt tema.
+
+2. **Fix av finansiell modul**  
+   - Åtgärda felet  `Only 1D arrays accepted: Conversion failed for column customdata with type object`. Troligtvis försöker du skicka en kolumn med listor eller dicts som `customdata` till Plotly.  
+     - Kontrollera att `customdata` är en numpy-array eller enkel lista med rätt längd.  
+     - Exempel:
+       ```python
+       df['customdata'] = df['customdata'].apply(lambda x: [x])  # eller välj rätt dimension
+       fig = px.bar(df, x='company', y='revenue', custom_data=['customdata'])
+       ```
+   - Gå igenom övriga `customdata`–anrop och rensa ut complex objects.
+
+3. **Testa och stabilisera**  
+   - Lägg in try/except runt varje diagram-rendering:
+     ```python
+     try:
+         st.plotly_chart(fig, use_container_width=True)
+     except Exception as e:
+         st.error(f"Misslyckades rita diagram: {e}")
+     ```
+   - Kör funktionen för finansiella nyckeltal direkt vid appstart och testa alla dropdown-kombinationer för att fånga edge cases.
+
+4. **Promptstruktur**  
+   - Uppdatera `requirements.txt` med nödvändiga paket:
+     ```
+     streamlit
+     pandas
+     plotly
+     yfinance
+     ```
+   - Se över att `pyproject.toml` eller `uv.lock` inte skapar konflikter – välj bara en.
+
+Tack!

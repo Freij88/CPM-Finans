@@ -112,63 +112,89 @@ def create_financial_charts(df):
     usd_to_sek = 10.5
     df_filtered['Revenue (Mdr SEK)'] = df_filtered['Revenue (B USD)'] * usd_to_sek
     
-    # Revenue stapeldiagram
-    revenue_chart = px.bar(
-        df_filtered,
-        x='Company',
-        y='Revenue (Mdr SEK)',
-        color='Country',
-        title='Omsättning per företag (Mdr SEK)',
-        hover_data={
-            'Revenue (Mdr SEK)': ':.1f',
-            'Employees': ':,',
-            'Data Source': True
-        },
-        labels={'Revenue (Mdr SEK)': 'Omsättning (Mdr SEK)'}
-    )
-    revenue_chart.update_layout(height=400)
+    try:
+        # Revenue stapeldiagram - enklare version utan hover_data för att undvika Arrow-fel
+        revenue_chart = px.bar(
+            df_filtered,
+            x='Company',
+            y='Revenue (Mdr SEK)',
+            color='Country',
+            title='Omsättning per företag (Mdr SEK)',
+            labels={'Revenue (Mdr SEK)': 'Omsättning (Mdr SEK)'}
+        )
+        revenue_chart.update_layout(height=400)
+        
+        # Lägg till källa som text
+        revenue_chart.add_annotation(
+            text="Källa: Yahoo Finance",
+            x=0.5, y=-0.15,
+            xref="paper", yref="paper",
+            showarrow=False,
+            font=dict(size=10, color="gray")
+        )
+        
+    except Exception as e:
+        st.error(f"Problem med revenue diagram: {e}")
+        revenue_chart = None
     
     # P/E vs Revenue scatter plot
-    pe_filtered = df_filtered[df_filtered['P/E Ratio'] > 0].copy()
     pe_chart = None
+    pe_filtered = df_filtered[df_filtered['P/E Ratio'] > 0].copy()
     
     if not pe_filtered.empty:
-        pe_chart = px.scatter(
-            pe_filtered,
-            x='Revenue (Mdr SEK)',
-            y='P/E Ratio',
-            size='Employees',
-            color='Country',
-            hover_name='Company',
-            title='P/E-tal vs Omsättning (bubbelstorlek = antal anställda)',
-            hover_data={
-                'Revenue (Mdr SEK)': ':.1f',
-                'P/E Ratio': ':.2f',
-                'Employees': ':,',
-                'Data Source': True
-            },
-            labels={
-                'Revenue (Mdr SEK)': 'Omsättning (Mdr SEK)',
-                'P/E Ratio': 'P/E-tal'
-            }
-        )
-        pe_chart.update_layout(height=400)
+        try:
+            pe_chart = px.scatter(
+                pe_filtered,
+                x='Revenue (Mdr SEK)',
+                y='P/E Ratio',
+                size='Employees',
+                color='Country',
+                title='P/E-tal vs Omsättning (bubbelstorlek = antal anställda)',
+                labels={
+                    'Revenue (Mdr SEK)': 'Omsättning (Mdr SEK)',
+                    'P/E Ratio': 'P/E-tal'
+                }
+            )
+            pe_chart.update_layout(height=400)
+            
+            # Lägg till källa som text
+            pe_chart.add_annotation(
+                text="Källa: Yahoo Finance",
+                x=0.5, y=-0.15,
+                xref="paper", yref="paper",
+                showarrow=False,
+                font=dict(size=10, color="gray")
+            )
+            
+        except Exception as e:
+            st.error(f"Problem med P/E diagram: {e}")
+            pe_chart = None
     
     # Marknadspenetration diagram
-    penetration_chart = px.bar(
-        df_filtered,
-        x='Company',
-        y='Market Penetration (%)',
-        color='Country',
-        title='Marknadspenetration per företag (%)',
-        hover_data={
-            'Market Penetration (%)': ':.2f',
-            'Revenue (Mdr SEK)': ':.1f',
-            'Data Source': True
-        },
-        labels={'Market Penetration (%)': 'Marknadspenetration (%)'}
-    )
-    penetration_chart.update_layout(height=400)
+    penetration_chart = None
+    try:
+        penetration_chart = px.bar(
+            df_filtered,
+            x='Company',
+            y='Market Penetration (%)',
+            color='Country',
+            title='Marknadspenetration per företag (%)',
+            labels={'Market Penetration (%)': 'Marknadspenetration (%)'}
+        )
+        penetration_chart.update_layout(height=400)
+        
+        # Lägg till källa som text
+        penetration_chart.add_annotation(
+            text="Källa: Branschdata",
+            x=0.5, y=-0.15,
+            xref="paper", yref="paper",
+            showarrow=False,
+            font=dict(size=10, color="gray")
+        )
+        
+    except Exception as e:
+        st.error(f"Problem med penetration diagram: {e}")
+        penetration_chart = None
     
     return revenue_chart, pe_chart, penetration_chart
 
@@ -262,18 +288,27 @@ def show_financial_tab():
             col1, col2 = st.columns(2)
             with col1:
                 st.caption("💡 Hovra över staplarna för detaljer")
-                st.plotly_chart(revenue_chart, use_container_width=True)
+                try:
+                    st.plotly_chart(revenue_chart, use_container_width=True)
+                except Exception as e:
+                    st.error(f"Misslyckades rita omsättningsdiagram: {e}")
             with col2:
                 if pe_chart:
                     st.caption("💡 Bubbelstorlek = antal anställda")
-                    st.plotly_chart(pe_chart, use_container_width=True)
+                    try:
+                        st.plotly_chart(pe_chart, use_container_width=True)
+                    except Exception as e:
+                        st.error(f"Misslyckades rita P/E-diagram: {e}")
                 else:
                     st.info("💡 P/E-data ej tillgänglig för dessa företag")
         
         # Visa marknadspenetration
         if penetration_chart:
             st.caption("💡 Baserat på total branschomsättning")
-            st.plotly_chart(penetration_chart, use_container_width=True)
+            try:
+                st.plotly_chart(penetration_chart, use_container_width=True)
+            except Exception as e:
+                st.error(f"Misslyckades rita marknadspenetration: {e}")
         
         st.dataframe(cached_data, use_container_width=True)
     
@@ -389,13 +424,27 @@ def show_financial_tab():
                     col1, col2 = st.columns(2)
                     with col1:
                         st.caption("💡 Hovra över staplarna för detaljer")
-                        st.altair_chart(revenue_chart, use_container_width=True)
+                        try:
+                            st.plotly_chart(revenue_chart, use_container_width=True)
+                        except Exception as e:
+                            st.error(f"Misslyckades rita omsättningsdiagram: {e}")
                     with col2:
                         if pe_chart:
                             st.caption("💡 Bubbelstorlek = antal anställda")
-                            st.altair_chart(pe_chart, use_container_width=True)
+                            try:
+                                st.plotly_chart(pe_chart, use_container_width=True)
+                            except Exception as e:
+                                st.error(f"Misslyckades rita P/E-diagram: {e}")
                         else:
                             st.info("💡 P/E-diagram kräver tillgängliga P/E-tal")
+                
+                # Visa marknadspenetration
+                if penetration_chart:
+                    st.caption("💡 Baserat på total branschomsättning")
+                    try:
+                        st.plotly_chart(penetration_chart, use_container_width=True)
+                    except Exception as e:
+                        st.error(f"Misslyckades rita marknadspenetration: {e}")
                 
                 # Geografisk heatmap
                 st.subheader("🗺️ Geografisk fördelning")
